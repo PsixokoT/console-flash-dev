@@ -195,7 +195,8 @@ package com.psixokot.console {
         protected function applyCommand(cmd:Command):void {
             //try {
                 var args:Array = getArgsToCallback(cmd);
-                _view.addInfo(cmd.apply(args));
+                var result:String = cmd.apply(args);
+                if (result) _view.addInfo(result);
             //} catch (error:Error) {
                 //_view.addError(error.toString());
             //}
