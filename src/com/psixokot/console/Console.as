@@ -69,7 +69,7 @@ package com.psixokot.console {
         //
         //--------------------------------------------------------------------------
 
-        public static const VERSION:String = '0.0beta';
+        public static const VERSION:String = 'v1.0';
 
         /**
         * @private

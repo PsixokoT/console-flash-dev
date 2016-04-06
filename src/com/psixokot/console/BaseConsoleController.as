@@ -104,7 +104,7 @@ package com.psixokot.console {
             _commandsHash = {};
             _dtf = new DateTimeFormatter('ru-RU', DateTimeStyle.NONE, DateTimeStyle.MEDIUM);
 
-            _view.addInfo('PsixokoT Console [Version ' + Console.VERSION + '] 2016\nInput "help" to view command list');
+            _view.addInfo('PsixokoT Console [' + Console.VERSION + '] 2016\nInput "help" to view command list');
 
             initCommands();
         }
@@ -132,7 +132,7 @@ package com.psixokot.console {
             add('fps', 'toggle FPSMeter', Console.toggleFps);
 
             add('help', 'input help', this.help,
-                    new Args().add('name', String, 'Enter the name of the command to see the description', getHelpCommands, true),
+                    new Args().add('name', String, 'Enter the name of the command to see the description', getCommands, true),
                     false
             );
         }
@@ -334,9 +334,13 @@ package com.psixokot.console {
                 switch (data.type) {
                     case Sentence.COMMAND_NAME:
                         array = getCommands();
-                        if (cmd && array.length == 1) {
-                            info = cmd.getDescription();
-                            array = [];
+                        if (cmd) {
+                            if (cmd.name == 'help') array.length = 1;
+
+                            if (array.length == 1) {
+                                info = cmd.getDescription();
+                                array = [];
+                            }
                         }
                         index = value ? data.index : data.caret - 1;
                         break;
@@ -413,7 +417,7 @@ package com.psixokot.console {
          */
         private function getCommands(name:String = null):Array {
             name ||= _sentence.commandName;
-            var pattern:RegExp;// = new RegExp("[" + name + "]+");
+            var pattern:RegExp;
             var str:String = '';
             if (name) {
                 for (var i:int = 0; i < name.length; i++) {
@@ -422,7 +426,7 @@ package com.psixokot.console {
             }
             pattern = new RegExp(str);
             var array:Array = _commandsList.filter(function(c:Command, index:int = 0, comands:Array = null):Boolean {
-                return c.name.search(pattern) >= 0;
+                return name == 'help' || c.name.search(pattern) >= 0;
             });
             array.sort(sortCommands);
             return array;
@@ -461,27 +465,9 @@ package com.psixokot.console {
                 var cmd:Command = getCommand(name);
                 if (cmd) {
                     return cmd.description;
-                } else {
-                    return getCommands(name).toString();
                 }
-            } else {
-                return _commandsList.sort().join('\n');
             }
-            return null;
-        }
-
-        /**
-         * @private
-         */
-        private function getHelpCommands(arg:String):Array {
-            var command:Command = getCommand();
-            if (!command) return null;
-            //if (!_sentence.arguments) return _
-            var array:Array = _commandsList.filter(function(c:Command, index:int = 0, array:Array = null):Boolean {
-                return !arg || c.name.search(arg) >= 0;
-            });
-            array.sort(sortCommands);
-            return array;
+            return _commandsList.sort().join('\n');
         }
 
         /**
