@@ -428,29 +428,24 @@ package com.psixokot.console {
             var array:Array = _commandsList.filter(function(c:Command, index:int = 0, comands:Array = null):Boolean {
                 return name == 'help' || c.name.search(pattern) >= 0;
             });
-            array.sort(sortCommands);
-            return array;
-        }
+            array.sort(function(a:Command, b:Command):Number {
+                var ai:int = a.name.search(pattern);
+                var bi:int = b.name.search(pattern);
 
-        /**
-         * @private
-         */
-        private function sortCommands(a:Command, b:Command):Number {
-            var ai:int = a.name.search(_sentence.commandName);
-            var bi:int = b.name.search(_sentence.commandName);
-
-            if(ai > bi) {
-                return 1;
-            } else if(ai < bi) {
-                return -1;
-            } else  {
-                if (a.name.length > b.name.length) {
+                if(ai > bi) {
                     return 1;
-                } else if (a.name.length < b.name.length) {
+                } else if(ai < bi) {
                     return -1;
+                } else  {
+                    if (a.name.length > b.name.length) {
+                        return 1;
+                    } else if (a.name.length < b.name.length) {
+                        return -1;
+                    }
+                    return 0;
                 }
-                return 0;
-            }
+            });
+            return array;
         }
 
         //--------------------------------------------------------------------------
