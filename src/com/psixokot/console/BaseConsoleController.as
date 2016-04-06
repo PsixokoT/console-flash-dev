@@ -488,7 +488,7 @@ package com.psixokot.console {
          */
         private function clear(data:Object = null):String {
             this._view.setInput();
-            this._view.setLog('');
+            this._view.setLog();
             return null;
         }
 

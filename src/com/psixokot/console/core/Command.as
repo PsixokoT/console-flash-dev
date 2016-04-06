@@ -4,6 +4,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 package com.psixokot.console.core {
+    import com.psixokot.console.Console;
+
     /**
     * @author        PsixokoT
     * @version       1.0
@@ -100,15 +102,20 @@ package com.psixokot.console.core {
         }
 
         public function apply(args:Array = null):String {
-            var str:String = '';
-
             if (_arguments && args) {
                 if (args.length < _arguments.requiredArgumentsCount) {
-                    str.concat('Warning: arguments count small that need\n');
+                    Console.logWarning('Warning: arguments count small that need');
                 }
             }
 
-            return str + _callback.apply(null, args ? args : []);
+            var result:String;
+            try {
+                result = _callback.apply(null, args ? args : []);
+            } catch (error:Error) {
+                //result = error.getStackTrace();
+            }
+
+            return result;
         }
     }
 }
