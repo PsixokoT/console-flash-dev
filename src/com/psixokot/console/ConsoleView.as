@@ -7,7 +7,6 @@ package com.psixokot.console {
     import flash.display.Graphics;
     import flash.display.Sprite;
     import flash.events.Event;
-    import flash.events.FocusEvent;
     import flash.events.MouseEvent;
     import flash.geom.Rectangle;
     import flash.text.TextField;
@@ -159,9 +158,9 @@ package com.psixokot.console {
             super.stage.focus = _inputField;
         }
 
-        public function showHint(info:String = null, data:Array = null, index:int = 0):void {
-            _hint.setData(info, data);
-            var bound:Rectangle = _inputField.getCharBoundaries(index);
+        public function showHint(info:String = null, data:Array = null, charIndex:int = 0, dataIndex:int = 0):void {
+            _hint.setData(info, data, dataIndex);
+            var bound:Rectangle = _inputField.getCharBoundaries(charIndex);
             _hint.x = bound ? _inputField.x + bound.x : _inputField.x + _inputField.textWidth;
         }
 

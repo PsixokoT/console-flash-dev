@@ -148,10 +148,10 @@ package com.psixokot.console {
             updateSelected();
         }
 
-        public function setData(info:String = null, data:Array = null):void {
+        public function setData(info:String = null, data:Array = null, dataIndex:int = 0):void {
             _info = info;
             _data = data;
-            update();
+            update(dataIndex);
         }
 
         //--------------------------------------------------------------------------
@@ -163,7 +163,7 @@ package com.psixokot.console {
         /**
          * @private
          */
-        private function update():void {
+        private function update(dataIndex:int = 0):void {
             if (!super.stage) return;
 
             var field:TextField;
@@ -201,7 +201,7 @@ package com.psixokot.console {
             _infoField.x = len ? maxW : 0;
             _infoField.width = stage.stageWidth - localToGlobal(new Point(_infoField.x, _infoField.y)).x - 15;
 
-            _selectIndex = 0;
+            _selectIndex = dataIndex;
 
             updateSelected();
 

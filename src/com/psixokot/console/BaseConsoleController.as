@@ -104,7 +104,7 @@ package com.psixokot.console {
             _commandsHash = {};
             _dtf = new DateTimeFormatter('ru-RU', DateTimeStyle.NONE, DateTimeStyle.MEDIUM);
 
-            _view.addInfo('PsixokoT Console [' + Console.VERSION + '] 2016\nInput "help" to view command list');
+            _view.addInfo('PsixokoT Console [' + Console.VERSION + '] 2016\nInput "help" to view command list\n');
 
             initCommands();
         }
@@ -119,11 +119,12 @@ package com.psixokot.console {
             return addCommand(new Command(name, desc, callback, args, toObject));
         }
 
-        public function removeCommand(name:String):void {
-            var command:Command = _commandsHash[name];
-            if (command) {
-                var index:int = _commandsList.indexOf(command);
-                if (index >= 0) _commandsList.splice(index, 1);
+        public function remove(name:String):void {
+            if (name in _commandsHash) {
+                var c:Command = _commandsHash[name];
+                var i:int = _commandsList.indexOf(c);
+                if (i >= 0) _commandsList.splice(i, 1);
+                delete _commandsHash[name];
             }
         }
 
@@ -141,15 +142,6 @@ package com.psixokot.console {
             _commandsHash[command.name] = command;
             _commandsList.push(command);
             return command;
-        }
-
-        public function remove(name:String):void {
-            if (name in _commandsHash) {
-                var c:Command = _commandsHash[name];
-                var i:int = _commandsList.indexOf(c);
-                if (i >= 0) _commandsList.splice(i, 1);
-                delete _commandsHash[name];
-            }
         }
 
         //--------------------------------------------------------------------------
@@ -320,7 +312,8 @@ package com.psixokot.console {
         private function hint():void {
             _sentence.input(_view.inputText, _view.inputField.caretIndex);
 
-            var index:int = _view.inputField.caretIndex - 1;
+            var charIndex:int = _view.inputField.caretIndex - 1;
+            var dataIndex:int = -1;
             var cmd:Command = getCommand();
             var array:Array = [];
             var info:String;
@@ -342,7 +335,8 @@ package com.psixokot.console {
                                 array = [];
                             }
                         }
-                        index = value ? data.index : data.caret - 1;
+                        charIndex = value ? data.index : data.caret - 1;
+                        dataIndex = 0;
                         break;
                     case Sentence.OPTION_KEY:
                         break;
@@ -355,7 +349,7 @@ package com.psixokot.console {
                             if (arg) {
                                 array = arg.getVariants(value);
                                 info = arg.getDescription();
-                                index = value ? data.index : data.caret - 1;
+                                charIndex = value ? data.index : data.caret - 1;
                             }
                         }
                         break;
@@ -367,21 +361,28 @@ package com.psixokot.console {
                         if (arg) {
                             array = arg.getVariants(value);
                             info = arg.getDescription();
-                            index = _view.inputField.caretIndex;
+                            charIndex = _view.inputField.caretIndex;
                         }
                     }
                 }
             }
 
-            _view.showHint(info, array && array.length ? array : null, index);
+            _view.showHint(info, array && array.length ? array : null, charIndex, dataIndex);
         }
 
         /**
          * @private
          */
-        private function tab():Boolean {
+        private function tab(force:Boolean = false):Boolean {//TODO: rename arg
             if (_view.hint.data) {
-                var value:String = _view.hint.currentArg.toString();
+                var value:String;
+                if (_view.hint.currentArg) {
+                    value = _view.hint.currentArg.toString();
+                } else if (force) {
+                    value = _view.hint.data[0].toString();
+                } else {
+                    return false;
+                }
                 var index:int = _view.inputField.caretIndex - 1;
                 var data:SentanceHintData = _sentence.hintData;
                 var cmd:Command = getCommand();
@@ -509,7 +510,7 @@ package com.psixokot.console {
                     }
                     break;
                 case Keyboard.TAB:
-                    tab();
+                    tab(true);
                     break;
             }
         }
