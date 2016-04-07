@@ -328,7 +328,9 @@ package com.psixokot.console {
                 } else {
                     return false;
                 }
-                _view.setInput(_sentence.inputHint(value));
+                var inputHint:Array =_sentence.inputHint(value);
+                _view.setInput(inputHint[0]);
+                _view.inputField.setSelection(inputHint[1], inputHint[1]);
                 _view.hint.setData();
                 hint();
                 return true;

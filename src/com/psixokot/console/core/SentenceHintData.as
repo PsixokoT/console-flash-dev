@@ -223,21 +223,23 @@ package com.psixokot.console.core {
             return [info, array && array.length ? array : null, charIndex, dataIndex];
         }
 
-        public function inputHint(text:String):String {
+        public function inputHint(text:String):Array {
             var result:String = text;
-            //var index:
+            var startIndex:int = _index;
+            var caretIndex:int = _caret;
             var cmd:Command = getCommand();
             if (cmd) {
                 switch (_type) {
                     case _COMMAND_NAME:
-                        result = _sentence.input.substr(0, _caret) + text + _sentence.input.substr(_caret + cmd.name.length);
-                        //result = _sentence.input.substr(0, _index) + text + _sentence.input.substr(_index + cmd.name.length);
+                        startIndex = _caret;
+                        caretIndex = _caret + cmd.name.length;
                         break;
                     case _OPTION_KEY:
-                        result = _sentence.input.substr(0, _index) + text + _sentence.input.substr(_index + _value.length);
+                        startIndex = _index - _value.length;
+                        caretIndex = _index + _value.length;
                         break;
                     case _OPTION_ARG:
-                        result = _sentence.input.substr(0, _index) + text + _sentence.input.substr(_index + _value.length);
+                        caretIndex = _index + _value.length;
                         break;
                     case _ARGS:
                         for (var i:int = 0; i < _sentence.args.length; i++) {
@@ -247,20 +249,23 @@ package com.psixokot.console.core {
                             }
                         }
                         if (_index == _caret - 1) {
-                            result = _sentence.input.substr(0, _index) + text + _sentence.input.substr(_index + _value.length);
+                            caretIndex = _caret + sArg[0].length;
                         } else {
-                            result = _sentence.input.substr(0, _caret) + text + _sentence.input.substr(_caret);
+                            startIndex = _caret;
                         }
 
                         break;
                     default:
-                        result = _sentence.input.substr(0, _caret) + text;// + _sentence.input.substr(_index + _)
+                        result = "error";
                         break;
                 }
             } else {
-                result = _sentence.input.substr(0, _index) + text + _sentence.input.substr(_index + text.length);
+                caretIndex = _index + text.length;
             }
-            return result;
+
+            result = _sentence.input.substr(0, startIndex) + text + _sentence.input.substr(caretIndex);
+
+            return [result, caretIndex];
         }
 
         //--------------------------------------------------------------------------
