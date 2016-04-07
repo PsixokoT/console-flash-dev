@@ -64,6 +64,7 @@ package com.psixokot.console {
             super.addChild(_baseField);
 
             _inputField = new TextField();
+            _inputField.tabEnabled = false;
             _inputField.type = TextFieldType.INPUT;
             _inputField.defaultTextFormat = _INFO_FORMAT;
             _inputField.multiline = false;
