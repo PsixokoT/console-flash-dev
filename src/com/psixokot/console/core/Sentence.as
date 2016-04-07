@@ -92,7 +92,7 @@ package com.psixokot.console.core {
         //--------------------------------------------------------------------------
 
 
-        public const hintData:SentanceHintData = new SentanceHintData();
+        public const hintData:SentenceHintData = new SentenceHintData(this);
 
         //--------------------------------------------------------------------------
         //

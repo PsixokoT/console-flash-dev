@@ -8,7 +8,7 @@ package com.psixokot.console {
     import com.psixokot.console.core.Args;
     import com.psixokot.console.core.Command;
     import com.psixokot.console.core.Option;
-    import com.psixokot.console.core.SentanceHintData;
+    import com.psixokot.console.core.SentenceHintData;
     import com.psixokot.console.core.Sentence;
 
     import flash.events.Event;
@@ -320,7 +320,7 @@ package com.psixokot.console {
             var arg:Arg;
 
             if (_sentence.hintData.enabled) {
-                var data:SentanceHintData = _sentence.hintData;
+                var data:SentenceHintData = _sentence.hintData;
                 var value:String = data.value;
                 var num:int = data.num;
 
@@ -392,7 +392,7 @@ package com.psixokot.console {
                     return false;
                 }
                 var index:int = _view.inputField.caretIndex - 1;
-                var data:SentanceHintData = _sentence.hintData;
+                var data:SentenceHintData = _sentence.hintData;
                 var cmd:Command = getCommand();
                 if (data.enabled) {
                     var num:int = data.num;

@@ -12,7 +12,7 @@ package com.psixokot.console.core {
      * @langversion   3.0
      * @date            29.03.2016
      */
-    public class SentanceHintData {
+    public class SentenceHintData {
 
         //--------------------------------------------------------------------------
         //
@@ -20,7 +20,7 @@ package com.psixokot.console.core {
         //
         //--------------------------------------------------------------------------
 
-        public function SentanceHintData() {
+        public function SentenceHintData(sentance:Sentence) {
             super();
         }
 
