@@ -4,6 +4,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 package com.psixokot.console.core {
+    import com.psixokot.console.Console;
 
     /**
      * @author        psixo
@@ -115,7 +116,9 @@ package com.psixokot.console.core {
                 var str:String = _sentence.input.substr(0, caretIndex);
                 var match:Array = str.match(/\s-[^\s]*(\s*)$/);
                 var opt:Option = _sentence.getOptionAtIndex(caretIndex);
-                if (opt) {
+
+                if (match) Console.logWarning(match.join(",") + (opt ? 'opt: ' + opt.toString() : 'opt: false'));
+                if (opt) {//TODO: fuck this shit
                     if ((caretIndex - opt.index) < opt.key.length) {
                         setData(_OPTION_KEY, opt.key, opt.index);
                     } else {
@@ -123,7 +126,7 @@ package com.psixokot.console.core {
                     }
                 } else if (match && match.length) {
                     if (match[1] == " ") {
-                        setData(_OPTION_ARG, match[1], caretIndex);
+                        setData(_OPTION_ARG, match[0].substr(2), caretIndex);
                     } else {
                         setData(_OPTION_KEY, match[0].substr(2), caretIndex);
                     }
@@ -180,7 +183,14 @@ package com.psixokot.console.core {
                         }
                         break;
                     case _OPTION_ARG:
-                        break;
+                        if (cmd && cmd.arguments) {
+                            arg = cmd.arguments.hash[value];
+                            if (arg) {
+                                array = arg.getVariants(value);
+                                info = arg.getDescription();
+                                charIndex = value ? _index : _caret - 1;
+                            }
+                        }
                     case _ARGS:
                         if (cmd && cmd.arguments) {
                             arg = cmd.arguments.list[num];
@@ -195,7 +205,13 @@ package com.psixokot.console.core {
             } else {
                 if (cmd) {
                     if (cmd.arguments) {
-                        arg = cmd.arguments.list[_sentence.args.length];
+                        for (var i:int = 0; i < _sentence.args.length; i++) {
+                            var sArg:Array = _sentence.args[i];
+                            if (_caret <= sArg[1]) {
+                                break;
+                            }
+                        }
+                        arg = cmd.arguments.list[i];
                         if (arg) {
                             array = arg.getVariants(value);
                             info = arg.getDescription();
@@ -209,9 +225,40 @@ package com.psixokot.console.core {
 
         public function inputHint(text:String):String {
             var result:String = text;
+            //var index:
             var cmd:Command = getCommand();
             if (cmd) {
-                result = _sentence.input.substr(0, _caret) + text;// + _sentence.input.substr(_index + _)
+                switch (_type) {
+                    case _COMMAND_NAME:
+                        result = _sentence.input.substr(0, _caret) + text + _sentence.input.substr(_caret + cmd.name.length);
+                        //result = _sentence.input.substr(0, _index) + text + _sentence.input.substr(_index + cmd.name.length);
+                        break;
+                    case _OPTION_KEY:
+                        result = _sentence.input.substr(0, _index) + text + _sentence.input.substr(_index + _value.length);
+                        break;
+                    case _OPTION_ARG:
+                        result = _sentence.input.substr(0, _index) + text + _sentence.input.substr(_index + _value.length);
+                        break;
+                    case _ARGS:
+                        for (var i:int = 0; i < _sentence.args.length; i++) {
+                            var sArg:Array = _sentence.args[i];
+                            if (_caret <= sArg[1]) {
+                                break;
+                            }
+                        }
+                        if (_index == _caret - 1) {
+                            result = _sentence.input.substr(0, _index) + text + _sentence.input.substr(_index + _value.length);
+                        } else {
+                            result = _sentence.input.substr(0, _caret) + text + _sentence.input.substr(_caret);
+                        }
+
+                        break;
+                    default:
+                        result = _sentence.input.substr(0, _caret) + text;// + _sentence.input.substr(_index + _)
+                        break;
+                }
+            } else {
+                result = _sentence.input.substr(0, _index) + text + _sentence.input.substr(_index + text.length);
             }
             return result;
         }

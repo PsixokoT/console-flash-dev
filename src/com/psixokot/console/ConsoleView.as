@@ -162,7 +162,7 @@ package com.psixokot.console {
         public function showHint(info:String = null, data:Array = null, charIndex:int = 0, dataIndex:int = 0):void {
             _hint.setData(info, data, dataIndex);
             var bound:Rectangle = _inputField.getCharBoundaries(charIndex);
-            _hint.x = bound ? _inputField.x + bound.x : _inputField.x + _inputField.textWidth;
+            _hint.x = bound ? _inputField.x + bound.x - 2: _inputField.x + _inputField.textWidth;
         }
 
         //--------------------------------------------------------------------------
@@ -257,7 +257,7 @@ package com.psixokot.console {
             super.removeEventListener(MouseEvent.CLICK, handler_mouseClick);
             super.addEventListener(Event.ADDED_TO_STAGE, handler_addedToStage);
 
-            this._hint.setData();
+            //this._hint.setData();
             super.stage.focus = null;
         }
 

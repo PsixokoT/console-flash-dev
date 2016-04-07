@@ -94,7 +94,7 @@ package com.psixokot.console.core {
         //--------------------------------------------------------------------------
 
         public function inputText(text:String, caretIndex:int):void {
-            if (_input == text) return;
+            if (_input == text && caretIndex == _hintData.caret) return;
             _input = text;
 
             var match:Array;
