@@ -328,6 +328,10 @@ package com.psixokot.console {
                 } else {
                     return false;
                 }
+                _view.setInput(_sentence.inputHint(value));
+                _view.hint.setData();
+                hint();
+                return true;
                 var index:int = _view.inputField.caretIndex - 1;
                 /*var data:SentenceHintData = _sentence.hintData;
                 var cmd:Command = getCommand();
@@ -356,55 +360,10 @@ package com.psixokot.console {
         /**
          * @private
          */
-        private function getCommand(name:String = null):Command {
+        private function getCommand(name:String = null):Command {//TODO: check for duplicate in SentenceHintData
             name ||= _sentence.commandName;
             return _commandsHash[name];
         }
-
-        /**
-         * @private
-         *//*
-        private function getCommands(name:String = null):Array {
-            name ||= _sentence.commandName;
-            return getSortList(_commandsList, name == 'help' ? '' : name);
-        }
-
-        *//**
-         * @private
-         *//*
-        private function getSortList(input:Array, value:String):Array {
-            var pattern:RegExp;
-            var str:String = '';
-            if (value) {
-                for (var i:int = 0; i < value.length; i++) {
-                    str += '[' + value.charAt(i) + ']+.*';
-                }
-            }
-            pattern = new RegExp(str);
-
-            pattern = new RegExp(str);
-            var array:Array = input.filter(function(arg:String, ...args):Boolean {
-                return arg.search(pattern) >= 0;
-            });
-            array.sort(function(a:String, b:String):Number {
-                var ai:int = a.search(pattern);
-                var bi:int = b.search(pattern);
-
-                if(ai > bi) {
-                    return 1;
-                } else if(ai < bi) {
-                    return -1;
-                } else  {
-                    if (a.length > b.length) {
-                        return 1;
-                    } else if (a.length < b.length) {
-                        return -1;
-                    }
-                    return 0;
-                }
-            });
-            return array;
-        }*/
 
         //--------------------------------------------------------------------------
         //  Commands

@@ -92,6 +92,10 @@ package com.psixokot.console.core {
          */
         private var _caret:int;
 
+        public function get caret():int {
+            return _caret;
+        }
+
         /**
          * @private
          */
@@ -201,6 +205,15 @@ package com.psixokot.console.core {
                 }
             }
             return [info, array && array.length ? array : null, charIndex, dataIndex];
+        }
+
+        public function inputHint(text:String):String {
+            var result:String = text;
+            var cmd:Command = getCommand();
+            if (cmd) {
+                result = _sentence.input.substr(0, _caret) + text;// + _sentence.input.substr(_index + _)
+            }
+            return result;
         }
 
         //--------------------------------------------------------------------------

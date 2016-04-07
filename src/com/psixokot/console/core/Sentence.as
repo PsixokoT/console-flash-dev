@@ -155,6 +155,27 @@ package com.psixokot.console.core {
             return _hintData.getHintData(commands);
         }
 
+        public function inputHint(text:String):String {
+            return _hintData.inputHint(text);
+
+            //var index:int = _view.inputField.caretIndex - 1;
+            /*var data:SentenceHintData = _sentence.hintData;
+             var cmd:Command = getCommand();
+             if (data.enabled) {
+             var num:int = data.num;
+             if (data.type == Sentence.OPTION_KEY) {
+             value = _view.inputField.text.slice(0, data.index - data.value.length) + value + _view.inputField.text.slice(index + value.length);
+             }
+             if (data.type == Sentence.ARGS) {
+             value = _view.inputField.text.slice(0, data.index) + value + _view.inputField.text.slice(data.index - 1 + value.length);
+             }
+             } else if (cmd && cmd.arguments) {
+             value = _view.inputField.text.slice(0, index + 1) + value + _view.inputField.text.slice(index + value.length);
+             }*/
+
+            //return 0;
+        }
+
         public function getOptionAtIndex(index:int):Option {
             for each (var opt:Option in _options) {
                 if (index >= opt.index && index <= opt.index + opt.input.length) {
