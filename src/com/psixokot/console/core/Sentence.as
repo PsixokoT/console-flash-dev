@@ -16,26 +16,13 @@ package com.psixokot.console.core {
 
         //--------------------------------------------------------------------------
         //
-        //  Class constants
-        //
-        //--------------------------------------------------------------------------
-
-        public static const COMMAND_NAME:String = 'command';
-
-        public static const ARGS:String = 'arg';
-
-        public static const OPTION_KEY:String = 'optKey';
-
-        public static const OPTION_ARG:String = 'optArg';
-
-        //--------------------------------------------------------------------------
-        //
         //  Constructor
         //
         //--------------------------------------------------------------------------
 
         public function Sentence() {
             super();
+            _hintData = new SentenceHintData(this);
         }
 
         //--------------------------------------------------------------------------
@@ -47,12 +34,7 @@ package com.psixokot.console.core {
         /**
          * @private
          */
-        private var _input:String;
-
-        /**
-         * @private
-         */
-        private var _commandIndex:int;
+        private var _hintData:SentenceHintData;
 
         //--------------------------------------------------------------------------
         //
@@ -63,10 +45,28 @@ package com.psixokot.console.core {
         /**
          * @private
          */
+        private var _input:String;
+
+        public function get input():String {
+            return _input
+        }
+
+        /**
+         * @private
+         */
         private var _commandName:String;
 
         public function get commandName():String {
             return _commandName;
+        }
+
+        /**
+         * @private
+         */
+        private var _commandIndex:int;
+
+        public function get commandIndex():int {
+            return _commandIndex;
         }
 
         /**
@@ -88,19 +88,12 @@ package com.psixokot.console.core {
         }
 
         //--------------------------------------------------------------------------
-        //  HINT
-        //--------------------------------------------------------------------------
-
-
-        public const hintData:SentenceHintData = new SentenceHintData(this);
-
-        //--------------------------------------------------------------------------
         //
         //  Public methods
         //
         //--------------------------------------------------------------------------
 
-        public function input(text:String, caretIndex:int):void {
+        public function inputText(text:String, caretIndex:int):void {
             if (_input == text) return;
             _input = text;
 
@@ -155,57 +148,14 @@ package com.psixokot.console.core {
                 }
             }
 
-            this.setInputData(caretIndex);
+            _hintData.setInputData(caretIndex);
         }
 
-        //--------------------------------------------------------------------------
-        //
-        //  Private methods
-        //
-        //--------------------------------------------------------------------------
-
-        /**
-         * @private
-         */
-        private function setInputData(caretIndex:int):void {
-            hintData.enabled = false;
-
-            if (!_commandName || caretIndex <= _commandIndex + _commandName.length) {
-                hintData.setData(COMMAND_NAME, _commandName, _commandIndex);
-            } else {
-                var str:String = _input.substr(0, caretIndex);
-                var match:Array = str.match(/\s-[^\s]*(\s*)$/);
-                var opt:Option = getOptionAtIndex(caretIndex);
-                if (opt) {
-                    if ((caretIndex - opt.index) < opt.key.length) {
-                        hintData.setData(OPTION_KEY, opt.key, opt.index);
-                    } else {
-                        hintData.setData(OPTION_ARG, opt.value, opt.index);
-                    }
-                } else if (match && match.length) {
-                    if (match[1] == " ") {
-                        hintData.setData(OPTION_ARG, match[1], caretIndex);
-                    } else {
-                        hintData.setData(OPTION_KEY, match[0].substr(2), caretIndex);
-                    }
-                } else {
-                    for (var i:int = 0; i < _args.length; i++) {
-                        var arg:Array = _args[i];
-                        if (caretIndex >= arg[1] && caretIndex <= arg[1] + arg[0].length) {
-                            hintData.setData(ARGS, arg[0], arg[1]);
-                            hintData.num = i;
-                        }
-                    }
-                }
-            }
-
-            hintData.caret = caretIndex;
+        public function getHintData(commands:Array):Array {
+            return _hintData.getHintData(commands);
         }
 
-        /**
-         * @private
-         */
-        private function getOptionAtIndex(index:int):Option {
+        public function getOptionAtIndex(index:int):Option {
             for each (var opt:Option in _options) {
                 if (index >= opt.index && index <= opt.index + opt.input.length) {
                     return opt;

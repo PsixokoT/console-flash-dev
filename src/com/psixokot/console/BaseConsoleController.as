@@ -8,7 +8,6 @@ package com.psixokot.console {
     import com.psixokot.console.core.Args;
     import com.psixokot.console.core.Command;
     import com.psixokot.console.core.Option;
-    import com.psixokot.console.core.SentenceHintData;
     import com.psixokot.console.core.Sentence;
 
     import flash.events.Event;
@@ -132,10 +131,10 @@ package com.psixokot.console {
             add('clear', 'clear screen', this.clear);
             add('fps', 'toggle FPSMeter', Console.toggleFps);
 
-            add('help', 'input help', this.help,
+            /*add('help', 'input help', this.help,
                     new Args().add('name', String, 'Enter the name of the command to see the description', getCommands, true),
                     false
-            );
+            );*/
         }
 
         protected function addCommand(command:Command):Command {
@@ -286,7 +285,7 @@ package com.psixokot.console {
          * @private
          */
         private function enter():void {
-            _sentence.input(_view.inputText, _view.inputField.caretIndex);
+            _sentence.inputText(_view.inputText, _view.inputField.caretIndex);
 
             if (tab()) return;
 
@@ -310,72 +309,10 @@ package com.psixokot.console {
          * @private
          */
         private function hint():void {
-            _sentence.input(_view.inputText, _view.inputField.caretIndex);
+            _sentence.inputText(_view.inputText, _view.inputField.caretIndex);
 
-            var charIndex:int = _view.inputField.caretIndex - 1;
-            var dataIndex:int = -1;
-            var cmd:Command = getCommand();
-            var array:Array = [];
-            var info:String;
-            var arg:Arg;
-
-            if (_sentence.hintData.enabled) {
-                var data:SentenceHintData = _sentence.hintData;
-                var value:String = data.value;
-                var num:int = data.num;
-
-                switch (data.type) {
-                    case Sentence.COMMAND_NAME:
-                        array = getCommands();
-                        if (cmd) {
-                            if (cmd.name == 'help') array.length = 1;
-
-                            if (array.length == 1) {
-                                info = cmd.getDescription();
-                                array = [];
-                            }
-                        }
-                        charIndex = value ? data.index : data.caret - 1;
-                        dataIndex = 0;
-                        break;
-                    case Sentence.OPTION_KEY:
-                        if (cmd && cmd.arguments) {
-                            array = getSortList(cmd.arguments.list, value);
-                            if (array[0] == value) {
-                                info = cmd.arguments.hash[value].getDescription();
-                                array = null;
-                            }
-                            charIndex = data.index - value.length;
-                            dataIndex = 0;
-                        }
-                        break;
-                    case Sentence.OPTION_ARG:
-                        break;
-                    case Sentence.ARGS:
-                        if (cmd && cmd.arguments) {
-                            arg = cmd.arguments.list[num];
-                            if (arg) {
-                                array = arg.getVariants(value);
-                                info = arg.getDescription();
-                                charIndex = value ? data.index : data.caret - 1;
-                            }
-                        }
-                        break;
-                }
-            } else {
-                if (cmd) {
-                    if (cmd.arguments) {
-                        arg = cmd.arguments.list[_sentence.args.length];
-                        if (arg) {
-                            array = arg.getVariants(value);
-                            info = arg.getDescription();
-                            charIndex = _view.inputField.caretIndex;
-                        }
-                    }
-                }
-            }
-
-            _view.showHint(info, array && array.length ? array : null, charIndex, dataIndex);
+            var data:Array = _sentence.getHintData(_commandsList);
+            _view.showHint(data[0], data[1], data[2], data[3]);
         }
 
         /**
@@ -392,7 +329,7 @@ package com.psixokot.console {
                     return false;
                 }
                 var index:int = _view.inputField.caretIndex - 1;
-                var data:SentenceHintData = _sentence.hintData;
+                /*var data:SentenceHintData = _sentence.hintData;
                 var cmd:Command = getCommand();
                 if (data.enabled) {
                     var num:int = data.num;
@@ -404,7 +341,8 @@ package com.psixokot.console {
                     }
                 } else if (cmd && cmd.arguments) {
                     value = _view.inputField.text.slice(0, index + 1) + value + _view.inputField.text.slice(index + value.length);
-                }
+                }*/
+
 
                 _view.setInput(value);
                 _view.hint.setData();
@@ -425,15 +363,15 @@ package com.psixokot.console {
 
         /**
          * @private
-         */
+         *//*
         private function getCommands(name:String = null):Array {
             name ||= _sentence.commandName;
             return getSortList(_commandsList, name == 'help' ? '' : name);
         }
 
-        /**
+        *//**
          * @private
-         */
+         *//*
         private function getSortList(input:Array, value:String):Array {
             var pattern:RegExp;
             var str:String = '';
@@ -466,7 +404,7 @@ package com.psixokot.console {
                 }
             });
             return array;
-        }
+        }*/
 
         //--------------------------------------------------------------------------
         //  Commands
