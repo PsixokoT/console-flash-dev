@@ -186,7 +186,7 @@ package com.psixokot.console.core {
                     if (match[1] == " ") {
                         hintData.setData(OPTION_ARG, match[1], caretIndex);
                     } else {
-                        hintData.setData(OPTION_KEY, match[0], caretIndex);
+                        hintData.setData(OPTION_KEY, match[0].substr(2), caretIndex);
                     }
                 } else {
                     for (var i:int = 0; i < _args.length; i++) {

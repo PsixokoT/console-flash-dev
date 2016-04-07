@@ -339,9 +339,17 @@ package com.psixokot.console {
                         dataIndex = 0;
                         break;
                     case Sentence.OPTION_KEY:
+                        if (cmd && cmd.arguments) {
+                            array = getSortList(cmd.arguments.list, value);
+                            if (array[0] == value) {
+                                info = cmd.arguments.hash[value].getDescription();
+                                array = null;
+                            }
+                            charIndex = data.index - value.length;
+                            dataIndex = 0;
+                        }
                         break;
                     case Sentence.OPTION_ARG:
-
                         break;
                     case Sentence.ARGS:
                         if (cmd && cmd.arguments) {
@@ -388,7 +396,9 @@ package com.psixokot.console {
                 var cmd:Command = getCommand();
                 if (data.enabled) {
                     var num:int = data.num;
-
+                    if (data.type == Sentence.OPTION_KEY) {
+                        value = _view.inputField.text.slice(0, data.index - data.value.length) + value + _view.inputField.text.slice(index + value.length);
+                    }
                     if (data.type == Sentence.ARGS) {
                         value = _view.inputField.text.slice(0, data.index) + value + _view.inputField.text.slice(data.index - 1 + value.length);
                     }
@@ -418,29 +428,38 @@ package com.psixokot.console {
          */
         private function getCommands(name:String = null):Array {
             name ||= _sentence.commandName;
+            return getSortList(_commandsList, name == 'help' ? '' : name);
+        }
+
+        /**
+         * @private
+         */
+        private function getSortList(input:Array, value:String):Array {
             var pattern:RegExp;
             var str:String = '';
-            if (name) {
-                for (var i:int = 0; i < name.length; i++) {
-                    str += '[' + name.charAt(i) + ']+.*';
+            if (value) {
+                for (var i:int = 0; i < value.length; i++) {
+                    str += '[' + value.charAt(i) + ']+.*';
                 }
             }
             pattern = new RegExp(str);
-            var array:Array = _commandsList.filter(function(c:Command, index:int = 0, comands:Array = null):Boolean {
-                return name == 'help' || c.name.search(pattern) >= 0;
+
+            pattern = new RegExp(str);
+            var array:Array = input.filter(function(arg:String, ...args):Boolean {
+                return arg.search(pattern) >= 0;
             });
-            array.sort(function(a:Command, b:Command):Number {
-                var ai:int = a.name.search(pattern);
-                var bi:int = b.name.search(pattern);
+            array.sort(function(a:String, b:String):Number {
+                var ai:int = a.search(pattern);
+                var bi:int = b.search(pattern);
 
                 if(ai > bi) {
                     return 1;
                 } else if(ai < bi) {
                     return -1;
                 } else  {
-                    if (a.name.length > b.name.length) {
+                    if (a.length > b.length) {
                         return 1;
-                    } else if (a.name.length < b.name.length) {
+                    } else if (a.length < b.length) {
                         return -1;
                     }
                     return 0;
