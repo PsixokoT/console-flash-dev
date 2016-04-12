@@ -70,7 +70,7 @@ package com.psixokot.console.core {
         //--------------------------------------------------------------------------
 
         public function toString():String {
-            return _key + ':' + _value;
+            return _key + ':' + _value + '(' + index + ')';
         }
     }
 }

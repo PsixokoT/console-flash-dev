@@ -4,6 +4,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 package com.psixokot.console.core {
+    import com.psixokot.console.Console;
 
     /**
      * @author        PsixokoT
@@ -147,6 +148,8 @@ package com.psixokot.console.core {
                     index += str.length;
                 }
             }
+
+            //Console.log(_commandName + ":" + _commandIndex + ', options:' + _options + '' + ', args:' + _args);
 
             _hintData.setInputData(caretIndex);
         }

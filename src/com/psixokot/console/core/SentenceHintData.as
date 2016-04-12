@@ -66,11 +66,6 @@ package com.psixokot.console.core {
         /**
          * @private
          */
-        private var _enabled:Boolean;
-
-        /**
-         * @private
-         */
         private var _type:String;
 
         /**
@@ -108,8 +103,22 @@ package com.psixokot.console.core {
         //
         //--------------------------------------------------------------------------
 
+        public function toString():String {
+            return 'type: ' + _type + ', value: ' + _value + ', index: ' + _index + ', num: ' + _num + ', caret: ' + _caret;
+        }
+
+
+
+        /**
+         * @private
+         */
+        private function setData(type:String, value:String, index:int):void {
+            this._type = type;
+            this._value = value;
+            this._index = index;
+        }
+
         public function setInputData(caretIndex:int):void {
-            _enabled = false;
             if (!_sentence.commandName || caretIndex <= _sentence.commandIndex + _sentence.commandName.length) {
                 setData(_COMMAND_NAME, _sentence.commandName, _sentence.commandIndex);
             } else {
@@ -117,8 +126,8 @@ package com.psixokot.console.core {
                 var match:Array = str.match(/\s-[^\s]*(\s*)$/);
                 var opt:Option = _sentence.getOptionAtIndex(caretIndex);
 
-                if (match) Console.logWarning(match.join(",") + (opt ? 'opt: ' + opt.toString() : 'opt: false'));
-                if (opt) {//TODO: fuck this shit
+                if (opt) {
+                    //TODO: fuck this shit
                     if ((caretIndex - opt.index) < opt.key.length) {
                         setData(_OPTION_KEY, opt.key, opt.index);
                     } else {
@@ -130,18 +139,29 @@ package com.psixokot.console.core {
                     } else {
                         setData(_OPTION_KEY, match[0].substr(2), caretIndex);
                     }
-                } else {
+                } else if (_sentence.args.length) {
+                    _num = 0;
                     for (var i:int = 0; i < _sentence.args.length; i++) {
                         var arg:Array = _sentence.args[i];
-                        if (caretIndex >= arg[1] && caretIndex <= arg[1] + arg[0].length) {
-                            setData(_ARGS, arg[0], arg[1]);
+                        var v:String = arg[0];
+                        var ind:int = arg[1];
+                        if (caretIndex >= ind|| caretIndex <= ind + v.length) {
+                            setData(_ARGS, v, ind);
                             _num = i;
                         }
                     }
+                    if (!_num) {
+                        setData(_ARGS, null, caretIndex);
+                        _num = i + 1;
+                    }
+                } else {
+                    setData(_ARGS, null, caretIndex);
                 }
             }
 
             _caret = caretIndex;
+
+            Console.log(toString());
         }
 
         public function getHintData(commands:Array):Array {
@@ -153,72 +173,53 @@ package com.psixokot.console.core {
             var info:String;
             var arg:Arg;
 
-            if (_enabled) {
-                var value:String = _value;
-                var num:int = _num;
+            var value:String = _value;
+            var num:int = _num;
 
-                switch (_type) {
-                    case _COMMAND_NAME:
-                        array = getCommands();
-                        if (cmd) {
-                            if (cmd.name == 'help') array.length = 1;
+            switch (_type) {
+                case _COMMAND_NAME:
+                    array = getCommands();
+                    if (cmd) {
+                        if (cmd.name == 'help') array.length = 1;
 
-                            if (array.length == 1) {
-                                info = cmd.getDescription();
-                                array = [];
-                            }
+                        if (array.length == 1) {
+                            info = cmd.getDescription();
+                            array = [];
                         }
-                        charIndex = value ? _index : _caret - 1;
+                    }
+                    charIndex = value ? _index : _caret - 1;
+                    dataIndex = 0;
+                    break;
+                case _OPTION_KEY:
+                    if (cmd && cmd.arguments) {
+                        array = getSortList(cmd.arguments.list, value);
+                        if (array[0] == value) {
+                            info = cmd.arguments.hash[value].getDescription();
+                            array = null;
+                        }
+                        charIndex = _index - value.length;
                         dataIndex = 0;
-                        break;
-                    case _OPTION_KEY:
-                        if (cmd && cmd.arguments) {
-                            array = getSortList(cmd.arguments.list, value);
-                            if (array[0] == value) {
-                                info = cmd.arguments.hash[value].getDescription();
-                                array = null;
-                            }
-                            charIndex = _index - value.length;
-                            dataIndex = 0;
-                        }
-                        break;
-                    case _OPTION_ARG:
-                        if (cmd && cmd.arguments) {
-                            arg = cmd.arguments.hash[value];
-                            if (arg) {
-                                array = arg.getVariants(value);
-                                info = arg.getDescription();
-                                charIndex = value ? _index : _caret - 1;
-                            }
-                        }
-                    case _ARGS:
-                        if (cmd && cmd.arguments) {
-                            arg = cmd.arguments.list[num];
-                            if (arg) {
-                                array = arg.getVariants(value);
-                                info = arg.getDescription();
-                                charIndex = value ? _index : _caret - 1;
-                            }
-                        }
-                        break;
-                }
-            } else {
-                if (cmd) {
-                    if (cmd.arguments) {
-                        for (var i:int = 0; i < _sentence.args.length; i++) {
-                            var sArg:Array = _sentence.args[i];
-                            if (_caret <= sArg[1]) {
-                                break;
-                            }
-                        }
-                        arg = cmd.arguments.list[i];
+                    }
+                    break;
+                case _OPTION_ARG:
+                    if (cmd && cmd.arguments) {
+                        arg = cmd.arguments.hash[value];
                         if (arg) {
                             array = arg.getVariants(value);
                             info = arg.getDescription();
-                            charIndex = _caret;
+                            charIndex = value ? _index : _caret - 1;
                         }
                     }
-                }
+                case _ARGS:
+                    if (cmd && cmd.arguments) {
+                        arg = cmd.arguments.list[num];
+                        if (arg) {
+                            array = arg.getVariants(value);
+                            info = arg.getDescription();
+                            charIndex = value ? _index : _caret - 1;
+                        }
+                    }
+                    break;
             }
             return [info, array && array.length ? array : null, charIndex, dataIndex];
         }
@@ -227,12 +228,14 @@ package com.psixokot.console.core {
             var result:String = text;
             var startIndex:int = _index;
             var caretIndex:int = _caret;
+            /*var cut:Boolean = false;
             var cmd:Command = getCommand();
             if (cmd) {
                 switch (_type) {
                     case _COMMAND_NAME:
                         startIndex = _caret;
                         caretIndex = _caret + cmd.name.length;
+                        result = _sentence.input.substr(0, startIndex) + text + _sentence.input.substr(!cut ? caretIndex : startIndex);
                         break;
                     case _OPTION_KEY:
                         startIndex = _index - _value.length;
@@ -253,17 +256,21 @@ package com.psixokot.console.core {
                         } else {
                             startIndex = _caret;
                         }
-
+                        result = _sentence.input.substr(0, startIndex) + text + _sentence.input.substr(caretIndex);
+                        caretIndex = _index + text.length;
                         break;
                     default:
                         result = "error";
                         break;
                 }
             } else {
-                caretIndex = _index + text.length;
-            }
+                //command before arg
+                result = _sentence.input.substr(0, startIndex) + text + _sentence.input.substr(caretIndex);
 
-            result = _sentence.input.substr(0, startIndex) + text + _sentence.input.substr(caretIndex);
+            }*/
+            var len:int = _value ? _value.length : 0;
+            result = _sentence.input.substr(0, startIndex) + text + _sentence.input.substr(caretIndex + len);
+            caretIndex = _index + text.length;
 
             return [result, caretIndex];
         }
@@ -329,16 +336,5 @@ package com.psixokot.console.core {
             });
             return array;
         }
-
-        /**
-         * @private
-         */
-        private function setData(type:String, value:String, index:int):void {
-            this._type = type;
-            this._value = value;
-            this._index = index;
-            _enabled = true;
-        }
-
     }
 }
