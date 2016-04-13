@@ -107,55 +107,58 @@ package com.psixokot.console.core {
             return 'type: ' + _type + ', value: ' + _value + ', index: ' + _index + ', num: ' + _num + ', caret: ' + _caret;
         }
 
-
-
-        /**
-         * @private
-         */
-        private function setData(type:String, value:String, index:int):void {
-            this._type = type;
-            this._value = value;
-            this._index = index;
-        }
-
         public function setInputData(caretIndex:int):void {
+            _num = -1;
             if (!_sentence.commandName || caretIndex <= _sentence.commandIndex + _sentence.commandName.length) {
-                setData(_COMMAND_NAME, _sentence.commandName, _sentence.commandIndex);
+                setData(_COMMAND_NAME, caretIndex < _sentence.commandIndex ? null : _sentence.commandName, _sentence.commandIndex);
             } else {
                 var str:String = _sentence.input.substr(0, caretIndex);
                 var match:Array = str.match(/\s-[^\s]*(\s*)$/);
                 var opt:Option = _sentence.getOptionAtIndex(caretIndex);
 
                 if (opt) {
-                    //TODO: fuck this shit
                     if ((caretIndex - opt.index) < opt.key.length) {
                         setData(_OPTION_KEY, opt.key, opt.index);
                     } else {
                         setData(_OPTION_ARG, opt.value, opt.index);
                     }
                 } else if (match && match.length) {
-                    if (match[1] == " ") {
-                        setData(_OPTION_ARG, match[0].substr(2), caretIndex);
+                    var spaces:RegExp = new RegExp(/\s+/);
+                    if (spaces.test(match[1])) {
+                        setData(_OPTION_ARG, null, caretIndex);
                     } else {
                         setData(_OPTION_KEY, match[0].substr(2), caretIndex);
                     }
                 } else if (_sentence.args.length) {
-                    _num = 0;
+                    var arg:Array;
+                    var argValue:String;
+                    var argIndex:int;
                     for (var i:int = 0; i < _sentence.args.length; i++) {
-                        var arg:Array = _sentence.args[i];
-                        var v:String = arg[0];
-                        var ind:int = arg[1];
-                        if (caretIndex >= ind|| caretIndex <= ind + v.length) {
-                            setData(_ARGS, v, ind);
+                        arg = _sentence.args[i];
+                        argValue = arg[0];
+                        argIndex = arg[1];
+                        if (caretIndex < argIndex) {
+                            setData(_ARGS, null, caretIndex);
                             _num = i;
+                            break;
+                        } else if (caretIndex <= argIndex + argValue.length) {
+                            setData(_ARGS, argValue, argIndex);
+                            _num = i;
+                            break;
                         }
                     }
-                    if (!_num) {
-                        setData(_ARGS, null, caretIndex);
-                        _num = i + 1;
+
+                    if (_num < 0) {
+                        if (caretIndex > argIndex + argValue.length) {
+                            setData(_ARGS, null, caretIndex);
+                            _num = i;
+                        } else {
+                            trace();
+                        }
                     }
                 } else {
                     setData(_ARGS, null, caretIndex);
+                    _num = 0;
                 }
             }
 
@@ -280,6 +283,15 @@ package com.psixokot.console.core {
         //  Private methods
         //
         //--------------------------------------------------------------------------
+
+        /**
+         * @private
+         */
+        private function setData(type:String, value:String, index:int):void {
+            this._type = type;
+            this._value = value;
+            this._index = index;
+        }
 
         /**
          * @private
