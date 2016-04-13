@@ -311,9 +311,9 @@ package com.psixokot.console.core {
                     str += '[' + value.charAt(i) + ']+.*';
                 }
             }
+            
             pattern = new RegExp(str);
 
-            pattern = new RegExp(str);
             var array:Array = input.filter(function(arg:String, ...args):Boolean {
                 return arg.search(pattern) >= 0;
             });
