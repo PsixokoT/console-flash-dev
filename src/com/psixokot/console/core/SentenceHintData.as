@@ -108,7 +108,10 @@ package com.psixokot.console.core {
         }
 
         public function setInputData(caretIndex:int):void {
+            //if (_caret == caretIndex) return;
+
             _num = -1;
+
             var opt:Option = _sentence.getOptionAtIndex(caretIndex);
             if (!_sentence.commandName || caretIndex <= _sentence.commandIndex + _sentence.commandName.length) {
                 //command
@@ -141,7 +144,7 @@ package com.psixokot.console.core {
                     if (spaces.test(match[1])) {
                         setData(_OPTION_ARG, null, caretIndex);
                     } else {
-                        setData(_OPTION_KEY, match[0].substr(2), str.lastIndexOf('-'));
+                        setData(_OPTION_KEY, match[0].substr(2), str.lastIndexOf('-') + 1);
                     }
                 } else if (_sentence.args.length) {
                     //arguments
@@ -243,15 +246,11 @@ package com.psixokot.console.core {
         }
 
         public function inputHint(text:String):Array {
-            //TODO: correct input options
-            var result:String = text;
-            var startIndex:int = _index;
-            var caretIndex:int = _caret;
             var len:int = _value ? _value.length : 0;
-            result = _sentence.input.substr(0, startIndex) + text + _sentence.input.substr(caretIndex + len);
-            caretIndex = _index + text.length;
+            var start:String = _sentence.input.substr(0, _index);
+            var finish:String = _sentence.input.substr(_index + len);
 
-            return [result, caretIndex];
+            return [start + text + finish, _index + text.length];
         }
 
         //--------------------------------------------------------------------------
