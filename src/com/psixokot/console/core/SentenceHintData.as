@@ -113,14 +113,14 @@ package com.psixokot.console.core {
                 setData(_COMMAND_NAME, caretIndex < _sentence.commandIndex ? null : _sentence.commandName, _sentence.commandIndex);
             } else {
                 var str:String = _sentence.input.substr(0, caretIndex);
-                var match:Array = str.match(/\s-[^\s]*(\s*)$/);
+                var match:Array = str.match(/\s-[^\s]*(\s*)$/i);
                 var opt:Option = _sentence.getOptionAtIndex(caretIndex);
 
                 if (opt) {
-                    if ((caretIndex - opt.index) < opt.key.length) {
+                    if ((caretIndex - opt.index) <= opt.key.length) {
                         setData(_OPTION_KEY, opt.key, opt.index);
                     } else {
-                        setData(_OPTION_ARG, opt.value, opt.index);
+                        setData(_OPTION_ARG, opt.value, opt.index);//TODO: value = null if caret is between key and arg
                     }
                 } else if (match && match.length) {
                     var spaces:RegExp = new RegExp(/\s+/);
