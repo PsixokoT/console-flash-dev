@@ -141,7 +141,7 @@ package com.psixokot.console.core {
                     if (spaces.test(match[1])) {
                         setData(_OPTION_ARG, null, caretIndex);
                     } else {
-                        setData(_OPTION_KEY, match[0].substr(2), caretIndex);
+                        setData(_OPTION_KEY, match[0].substr(2), str.lastIndexOf('-'));
                     }
                 } else if (_sentence.args.length) {
                     //arguments
