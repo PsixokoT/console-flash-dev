@@ -109,20 +109,34 @@ package com.psixokot.console.core {
 
         public function setInputData(caretIndex:int):void {
             _num = -1;
+            var opt:Option = _sentence.getOptionAtIndex(caretIndex);
             if (!_sentence.commandName || caretIndex <= _sentence.commandIndex + _sentence.commandName.length) {
-                setData(_COMMAND_NAME, caretIndex < _sentence.commandIndex ? null : _sentence.commandName, _sentence.commandIndex);
+                //command
+                if (caretIndex < _sentence.commandIndex) {
+                    setData(_COMMAND_NAME, null, caretIndex);
+                } else {
+                    setData(_COMMAND_NAME, _sentence.commandName, _sentence.commandIndex);
+                }
+
+            } else if (opt) {
+                //options
+                if ((caretIndex - opt.index) <= opt.key.length) {
+                    setData(_OPTION_KEY, opt.key, opt.index);
+                } else {
+                    setData(_OPTION_ARG, opt.value, opt.index);//TODO: value = null if caret is between key and arg
+                }
             } else {
+                //TODO: warning infinity while
+                var char:String = _sentence.input.charAt(caretIndex);
+                while (char && char != ' ') {
+                    caretIndex++;
+                    char = _sentence.input.charAt(caretIndex);
+                }
                 var str:String = _sentence.input.substr(0, caretIndex);
                 var match:Array = str.match(/\s-[^\s]*(\s*)$/i);
-                var opt:Option = _sentence.getOptionAtIndex(caretIndex);
 
-                if (opt) {
-                    if ((caretIndex - opt.index) <= opt.key.length) {
-                        setData(_OPTION_KEY, opt.key, opt.index);
-                    } else {
-                        setData(_OPTION_ARG, opt.value, opt.index);//TODO: value = null if caret is between key and arg
-                    }
-                } else if (match && match.length) {
+                if (match && match.length) {
+                    //TODO: if key == prev_opt.value -> goto Arguments
                     var spaces:RegExp = new RegExp(/\s+/);
                     if (spaces.test(match[1])) {
                         setData(_OPTION_ARG, null, caretIndex);
@@ -130,6 +144,7 @@ package com.psixokot.console.core {
                         setData(_OPTION_KEY, match[0].substr(2), caretIndex);
                     }
                 } else if (_sentence.args.length) {
+                    //arguments
                     var arg:Array;
                     var argValue:String;
                     var argIndex:int;
@@ -153,7 +168,7 @@ package com.psixokot.console.core {
                             setData(_ARGS, null, caretIndex);
                             _num = i;
                         } else {
-                            trace();
+                            Console.logError('WTF!!!');
                         }
                     }
                 } else {
@@ -164,7 +179,7 @@ package com.psixokot.console.core {
 
             _caret = caretIndex;
 
-            Console.log(toString());
+            Console.log(toString() + '  ' + char);
         }
 
         public function getHintData(commands:Array):Array {
@@ -231,46 +246,6 @@ package com.psixokot.console.core {
             var result:String = text;
             var startIndex:int = _index;
             var caretIndex:int = _caret;
-            /*var cut:Boolean = false;
-            var cmd:Command = getCommand();
-            if (cmd) {
-                switch (_type) {
-                    case _COMMAND_NAME:
-                        startIndex = _caret;
-                        caretIndex = _caret + cmd.name.length;
-                        result = _sentence.input.substr(0, startIndex) + text + _sentence.input.substr(!cut ? caretIndex : startIndex);
-                        break;
-                    case _OPTION_KEY:
-                        startIndex = _index - _value.length;
-                        caretIndex = _index + _value.length;
-                        break;
-                    case _OPTION_ARG:
-                        caretIndex = _index + _value.length;
-                        break;
-                    case _ARGS:
-                        for (var i:int = 0; i < _sentence.args.length; i++) {
-                            var sArg:Array = _sentence.args[i];
-                            if (_caret <= sArg[1]) {
-                                break;
-                            }
-                        }
-                        if (_index == _caret - 1) {
-                            caretIndex = _caret + sArg[0].length;
-                        } else {
-                            startIndex = _caret;
-                        }
-                        result = _sentence.input.substr(0, startIndex) + text + _sentence.input.substr(caretIndex);
-                        caretIndex = _index + text.length;
-                        break;
-                    default:
-                        result = "error";
-                        break;
-                }
-            } else {
-                //command before arg
-                result = _sentence.input.substr(0, startIndex) + text + _sentence.input.substr(caretIndex);
-
-            }*/
             var len:int = _value ? _value.length : 0;
             result = _sentence.input.substr(0, startIndex) + text + _sentence.input.substr(caretIndex + len);
             caretIndex = _index + text.length;
