@@ -4,8 +4,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 package com.psixokot.console.core {
-    import com.psixokot.console.Console;
-
     /**
      * @author        PsixokoT
      * @version       1.0
@@ -28,7 +26,7 @@ package com.psixokot.console.core {
 
         //--------------------------------------------------------------------------
         //
-        //  Variables
+        //  Properties
         //
         //--------------------------------------------------------------------------
 
@@ -37,11 +35,9 @@ package com.psixokot.console.core {
          */
         private var _hintData:SentenceHintData;
 
-        //--------------------------------------------------------------------------
-        //
-        //  Properties
-        //
-        //--------------------------------------------------------------------------
+        public function get hintData():SentenceHintData {
+            return _hintData;
+        }
 
         /**
          * @private
@@ -95,6 +91,7 @@ package com.psixokot.console.core {
         //--------------------------------------------------------------------------
 
         public function inputText(text:String, caretIndex:int):void {
+            //TODO: remove quotes from String
             if (_input == text) {
                 _hintData.setInputData(caretIndex);
                 return;
@@ -153,17 +150,7 @@ package com.psixokot.console.core {
                 }
             }
 
-            //Console.log(_commandName + ":" + _commandIndex + ', options:' + _options + '' + ', args:' + _args);
-
             _hintData.setInputData(caretIndex);
-        }
-
-        public function getHintData(commands:Array):Array {
-            return _hintData.getHintData(commands);
-        }
-
-        public function inputHint(text:String):Array {
-            return _hintData.inputHint(text);
         }
 
         public function getOptionAtIndex(index:int):Option {

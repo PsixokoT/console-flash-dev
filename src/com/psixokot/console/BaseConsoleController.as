@@ -9,6 +9,7 @@ package com.psixokot.console {
     import com.psixokot.console.core.Command;
     import com.psixokot.console.core.Option;
     import com.psixokot.console.core.Sentence;
+    import com.psixokot.console.core.SentenceHintData;
 
     import flash.events.Event;
     import flash.events.EventDispatcher;
@@ -310,8 +311,62 @@ package com.psixokot.console {
          */
         private function hint():void {
             _sentence.inputText(_view.inputText, _view.inputField.caretIndex);
+            var hint:SentenceHintData = _sentence.hintData;
+            var charIndex:int = hint.caret - 1;
+            var dataIndex:int = -1;
+            var array:Array = [];
+            var cmd:Command = getCommand();
+            var info:String;
+            var arg:Arg;
 
-            var data:Array = _sentence.getHintData(_commandsList);
+            var value:String = hint.value;
+            var num:int = hint.num;
+
+            switch (hint.type) {
+                case SentenceHintData.COMMAND_NAME:
+                    array = getCommands();
+                    if (cmd) {
+                        if (array.length == 1) {
+                            info = cmd.getDescription();
+                            array = [];
+                        }
+                    }
+                    charIndex = value ? hint.index : hint.caret;
+                    dataIndex = 0;
+                    break;
+                case SentenceHintData.OPTION_KEY:
+                    if (cmd && cmd.arguments) {
+                        array = getSortList(cmd.arguments.list, value);
+                        if (array[0] == value) {
+                            info = cmd.arguments.hash[value].getDescription();
+                            array = null;
+                        }
+                        charIndex = hint.index - value.length;
+                        dataIndex = 0;
+                    }
+                    break;
+                case SentenceHintData.OPTION_ARG:
+                    if (cmd && cmd.arguments) {
+                        arg = cmd.arguments.hash[value];
+                        if (arg) {
+                            array = arg.getVariants(value);
+                            info = arg.getDescription();
+                            charIndex = value ? hint.index : hint.caret - 1;
+                        }
+                    }
+                case SentenceHintData.ARGS:
+                    if (cmd && cmd.arguments) {
+                        arg = cmd.arguments.list[num];
+                        if (arg) {
+                            array = arg.getVariants(value);
+                            info = arg.getDescription();
+                            charIndex = hint.index;
+                        }
+                    }
+                    break;
+            }
+            var data:Array  = [info, array && array.length ? array : null, charIndex, dataIndex];
+
             _view.showHint(data[0], data[1], data[2], data[3]);
         }
 
@@ -328,32 +383,13 @@ package com.psixokot.console {
                 } else {
                     return false;
                 }
-                var inputHint:Array =_sentence.inputHint(value);
+
+                var inputHint:Array =_sentence.hintData.inputHint(value);
                 _view.setInput(inputHint[0]);
                 _view.inputField.setSelection(inputHint[1], inputHint[1]);
                 _view.hint.setData();
+
                 hint();
-                return true;
-                var index:int = _view.inputField.caretIndex - 1;
-                /*var data:SentenceHintData = _sentence.hintData;
-                var cmd:Command = getCommand();
-                if (data.enabled) {
-                    var num:int = data.num;
-                    if (data.type == Sentence.OPTION_KEY) {
-                        value = _view.inputField.text.slice(0, data.index - data.value.length) + value + _view.inputField.text.slice(index + value.length);
-                    }
-                    if (data.type == Sentence.ARGS) {
-                        value = _view.inputField.text.slice(0, data.index) + value + _view.inputField.text.slice(data.index - 1 + value.length);
-                    }
-                } else if (cmd && cmd.arguments) {
-                    value = _view.inputField.text.slice(0, index + 1) + value + _view.inputField.text.slice(index + value.length);
-                }*/
-
-
-                _view.setInput(value);
-                _view.hint.setData();
-                hint();
-
                 return true;
             }
             return false;
@@ -362,9 +398,54 @@ package com.psixokot.console {
         /**
          * @private
          */
-        private function getCommand(name:String = null):Command {//TODO: check for duplicate in SentenceHintData
+        private function getCommand(name:String = null):Command {
             name ||= _sentence.commandName;
             return _commandsHash[name];
+        }
+
+        /**
+         * @private
+         */
+        private function getCommands(name:String = null):Array {
+            name ||= _sentence.hintData.value;
+            return getSortList(_commandsList, name == 'help' ? '' : name);
+        }
+
+        /**
+         * @private
+         */
+        private function getSortList(input:Array, value:String):Array {
+            var pattern:RegExp;
+            var str:String = '';
+            if (value) {
+                for (var i:int = 0; i < value.length; i++) {
+                    str += '[' + value.charAt(i) + ']+.*';
+                }
+            }
+
+            pattern = new RegExp(str);
+
+            var array:Array = input.filter(function(arg:String, ...args):Boolean {
+                return arg.search(pattern) >= 0;
+            });
+            array.sort(function(a:String, b:String):Number {
+                var ai:int = a.search(pattern);
+                var bi:int = b.search(pattern);
+
+                if(ai > bi) {
+                    return 1;
+                } else if(ai < bi) {
+                    return -1;
+                } else  {
+                    if (a.length > b.length) {
+                        return 1;
+                    } else if (a.length < b.length) {
+                        return -1;
+                    }
+                    return 0;
+                }
+            });
+            return array;
         }
 
         //--------------------------------------------------------------------------
