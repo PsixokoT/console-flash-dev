@@ -243,6 +243,7 @@ package com.psixokot.console.core {
         }
 
         public function inputHint(text:String):Array {
+            //TODO: correct input options
             var result:String = text;
             var startIndex:int = _index;
             var caretIndex:int = _caret;
