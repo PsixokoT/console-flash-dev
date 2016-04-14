@@ -181,10 +181,10 @@ package com.psixokot.console.core {
             }
 
             _caret = caretIndex;
-
-            Console.log(toString() + '  ' + char);
         }
 
+
+        //TODO: move commands and other staff to Controller!!!
         public function getHintData(commands:Array):Array {
             _commands = commands;
             var charIndex:int = _caret - 1;
@@ -201,14 +201,12 @@ package com.psixokot.console.core {
                 case _COMMAND_NAME:
                     array = getCommands();
                     if (cmd) {
-                        if (cmd.name == 'help') array.length = 1;
-
                         if (array.length == 1) {
                             info = cmd.getDescription();
                             array = [];
                         }
                     }
-                    charIndex = value ? _index : _caret - 1;
+                    charIndex = value ? _index : _caret;
                     dataIndex = 0;
                     break;
                 case _OPTION_KEY:
@@ -237,7 +235,7 @@ package com.psixokot.console.core {
                         if (arg) {
                             array = arg.getVariants(value);
                             info = arg.getDescription();
-                            charIndex = value ? _index : _caret - 1;
+                            charIndex = _index;
                         }
                     }
                     break;
@@ -283,7 +281,7 @@ package com.psixokot.console.core {
          * @private
          */
         private function getCommands(name:String = null):Array {
-            name ||= _sentence.commandName;
+            name ||= _value;
             return getSortList(_commands, name == 'help' ? '' : name);
         }
 
