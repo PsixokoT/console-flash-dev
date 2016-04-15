@@ -102,6 +102,15 @@ package com.psixokot.console.core {
             return _caret;
         }
 
+        /**
+         * @private
+         */
+        private var _optionValue:String;
+
+        public function get optionValue():String {
+            return this._optionValue;
+        }
+
         //--------------------------------------------------------------------------
         //
         //  Public methods
@@ -131,15 +140,16 @@ package com.psixokot.console.core {
                 if ((caretIndex - opt.index) <= opt.key.length) {
                     setData(OPTION_KEY, opt.key, opt.index);
                 } else {
-                    setData(OPTION_ARG, opt.value, opt.index);//TODO: value = null if caret is between key and arg
+                    setData(OPTION_ARG, opt.value, opt.index + opt.input.length - opt.value.length);//TODO: value = null if caret is between key and arg
+                    _optionValue = opt.key;
                 }
             } else {
                 //TODO: warning infinity while
-                var char:String = _sentence.input.charAt(caretIndex);
+                /*var char:String = _sentence.input.charAt(caretIndex);
                 while (char && char != ' ') {
                     caretIndex++;
                     char = _sentence.input.charAt(caretIndex);
-                }
+                }*/
                 var str:String = _sentence.input.substr(0, caretIndex);
                 var match:Array = str.match(/\s-[^\s]*(\s*)$/i);
 
@@ -148,6 +158,7 @@ package com.psixokot.console.core {
                     var spaces:RegExp = new RegExp(/\s+/);
                     if (spaces.test(match[1])) {
                         setData(OPTION_ARG, null, caretIndex);
+                        _optionValue = (match[0] as String).substr(2).replace(/\s+/, '');
                     } else {
                         setData(OPTION_KEY, match[0].substr(2), str.lastIndexOf('-') + 1);
                     }

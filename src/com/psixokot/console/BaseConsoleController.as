@@ -257,7 +257,7 @@ package com.psixokot.console {
          */
         private function next():void {
             if (this._view.hint.data) {
-                this._view.hint.next();
+                this._view.hint.next();//TODO: dont move inputField Cursor
             } else {
                 _historyIndex++;
                 if (_historyIndex >= _history.length) {
@@ -272,7 +272,7 @@ package com.psixokot.console {
          */
         private function previous():void {
             if (this._view.hint.data) {
-                this._view.hint.previous();
+                this._view.hint.previous();//TODO: dont move inputField Cursor
             } else {
                 _historyIndex--;
                 if (_historyIndex < -1) {
@@ -341,17 +341,17 @@ package com.psixokot.console {
                             info = cmd.arguments.hash[value].getDescription();
                             array = null;
                         }
-                        charIndex = hint.index - value.length;
+                        charIndex = hint.index;
                         dataIndex = 0;
                     }
                     break;
                 case SentenceHintData.OPTION_ARG:
                     if (cmd && cmd.arguments) {
-                        arg = cmd.arguments.hash[value];
+                        arg = cmd.arguments.hash[hint.optionValue];
                         if (arg) {
                             array = arg.getVariants(value);
                             info = arg.getDescription();
-                            charIndex = value ? hint.index : hint.caret - 1;
+                            charIndex = hint.index;
                         }
                     }
                 case SentenceHintData.ARGS:
@@ -365,9 +365,8 @@ package com.psixokot.console {
                     }
                     break;
             }
-            var data:Array  = [info, array && array.length ? array : null, charIndex, dataIndex];
 
-            _view.showHint(data[0], data[1], data[2], data[3]);
+            _view.showHint(info, array && array.length ? array : null, charIndex, dataIndex);
         }
 
         /**
@@ -378,6 +377,7 @@ package com.psixokot.console {
                 var value:String;
                 if (_view.hint.currentArg) {
                     value = _view.hint.currentArg.toString();
+                    if (value == _sentence.commandName && !force) return false;
                 } else if (force) {
                     value = _view.hint.data[0].toString();
                 } else {
@@ -391,6 +391,8 @@ package com.psixokot.console {
 
                 hint();
                 return true;
+            } else if (_sentence.hintData.type == SentenceHintData.COMMAND_NAME) {
+                //TODO: next command, like unix bash
             }
             return false;
         }

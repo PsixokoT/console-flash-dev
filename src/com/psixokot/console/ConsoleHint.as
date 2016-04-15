@@ -129,7 +129,6 @@ package com.psixokot.console {
         //
         //--------------------------------------------------------------------------
 
-
         public function next():void {
             _selectIndex++;
             if (_selectIndex >= _data.length) {
