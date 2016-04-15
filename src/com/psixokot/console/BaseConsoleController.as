@@ -132,10 +132,10 @@ package com.psixokot.console {
             add('clear', 'clear screen', this.clear);
             add('fps', 'toggle FPSMeter', Console.toggleFps);
 
-            /*add('help', 'input help', this.help,
+            add('help', 'input help', this.help,
                     new Args().add('name', String, 'Enter the name of the command to see the description', getCommands, true),
                     false
-            );*/
+            );
         }
 
         protected function addCommand(command:Command):Command {
@@ -410,7 +410,7 @@ package com.psixokot.console {
          */
         private function getCommands(name:String = null):Array {
             name ||= _sentence.hintData.value;
-            return getSortList(_commandsList, name == 'help' ? '' : name);
+            return getSortList(_commandsList, name);
         }
 
         /**
