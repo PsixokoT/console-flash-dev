@@ -28,6 +28,8 @@ package com.psixokot.console.core {
             _callback = callback;
             _arguments = arguments;
             _toObject = toObject;
+
+            //TODO: add confirm option
         }
 
         //--------------------------------------------------------------------------
