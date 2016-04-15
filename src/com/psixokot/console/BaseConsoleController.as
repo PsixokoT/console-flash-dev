@@ -458,7 +458,7 @@ package com.psixokot.console {
          * @private
          */
         private function help(name:String = null):String {
-            if (name) {
+            if (name && name != 'help') {
                 var cmd:Command = getCommand(name);
                 if (cmd) {
                     return cmd.description;

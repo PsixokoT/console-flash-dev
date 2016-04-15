@@ -103,7 +103,7 @@ package com.psixokot.console.core {
 		public function getVariants(pattern:String = null):Array {
 			var data:Array;
 			if (_value is Function) {
-				data = (_value as Function).apply(null, [pattern]) as Array;
+				data = (_value as Function).apply(this, [pattern]) as Array;
 			} else if (_value is Array) {
 				data = _value as Array;
 			} else if (_value) {
