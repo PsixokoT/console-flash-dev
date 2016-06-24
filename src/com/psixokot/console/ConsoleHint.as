@@ -66,8 +66,6 @@ package com.psixokot.console {
             _infoField.defaultTextFormat = _TEXT_FORMAT;
             _infoField.background = true;
             _infoField.backgroundColor = _NORMAL_COLOR;
-            _infoField.border = true;
-            _infoField.borderColor = _SELECTED_COLOR;
             _infoField.thickness = 2;
             _infoField.autoSize = TextFieldAutoSize.LEFT;
             _infoField.wordWrap = true;
@@ -177,8 +175,6 @@ package com.psixokot.console {
                 field.defaultTextFormat = _TEXT_FORMAT;
                 field.background = true;
                 field.backgroundColor = _INFO_COLOR;
-                field.border = true;
-                field.borderColor = _BORDER_COLOR;
                 field.multiline = false;
                 field.height = 20;
                 field.y = this._list.length * 20;
@@ -221,6 +217,8 @@ package com.psixokot.console {
 
                 if (i == _selectIndex) {
                     field.backgroundColor = _SELECTED_COLOR;
+                    field.borderColor = _BORDER_COLOR;
+                    field.border = true;
                     if (currentArg is IConsoleHintable) {
                         _infoField.htmlText += currentArg.getDescription();
                     } else {
@@ -228,6 +226,8 @@ package com.psixokot.console {
                     }
                 } else {
                     field.backgroundColor = _INFO_COLOR;
+                    //field.borderColor = _BORDER_COLOR;
+                    field.border = false;
                 }
             }
         }
