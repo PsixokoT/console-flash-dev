@@ -107,13 +107,16 @@ package game {
         }
 
         public static function logParams():void {
-            Console.log('infected_time = ' + _INFECTED_TIME);
-            Console.log('boom_before = ' + _BOOM_BEFORE);
-            Console.log('boom_after = ' + _BOOM_AFTER);
-            Console.log('with_joints = ' + _JOINTS_MODE);
-            Console.log('joints_sequence = ' +  _JOINTS_SEQUENCE);
-            Console.log('static_infection  = ' + _STATIC_INFECTION);
-            Console.log('infections_per_frame = ' + _INFECTIONS_PER_FRAME);
+            var result:String = '';
+	        result += 'infected_time = ' + _INFECTED_TIME + '\n';
+	        result += 'boom_before = ' + _BOOM_BEFORE + '\n';
+	        result += 'boom_after = ' + _BOOM_AFTER + '\n';
+	        result += 'with_joints = ' + _JOINTS_MODE + '\n';
+	        result += 'joints_sequence = ' +  _JOINTS_SEQUENCE + '\n';
+	        result += 'static_infection  = ' + _STATIC_INFECTION + '\n';
+	        result += 'infections_per_frame = ' + _INFECTIONS_PER_FRAME + '\n';
+            
+            Console.log(result);
         }
 
         //--------------------------------------------------------------------------
@@ -403,7 +406,7 @@ package game {
             super.removeEventListener(MouseEvent.MOUSE_DOWN, this.mouseDownHandler);
 
             _level.space.clear();
-            Console.getInstance().controller.remove('game_get_count');
+            Console.removeCommand('game_get_count');
         }
 
         /**

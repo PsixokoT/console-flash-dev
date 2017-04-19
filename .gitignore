@@ -5,3 +5,4 @@
 *.iws
 demo/lib/*.swc
 demo/.idea/
+out/

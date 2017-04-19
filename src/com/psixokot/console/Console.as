@@ -62,6 +62,10 @@ package com.psixokot.console {
         public static function addCommand(name:String, desc:String, callback:Function = null, args:Args = null, toObject:Boolean = true):Command {
             return _INSTANCE.addCommand(name, desc, callback, args, toObject);
         }
+	
+	    public static function removeCommand(name:String):void {
+            _INSTANCE.removeCommand(name);
+	    }
 
         //--------------------------------------------------------------------------
         //
@@ -113,21 +117,11 @@ package com.psixokot.console {
          */
         private var _controllerClass:Class = BaseConsoleController;
 
-        //--------------------------------------------------------------------------
-        //
-        //  Properties
-        //
-        //--------------------------------------------------------------------------
-
         /**
          * @private
          */
         private var _controller:BaseConsoleController;
-
-        public function get controller():BaseConsoleController {
-            return _controller;
-        }
-
+        
         //--------------------------------------------------------------------------
         //
         //  Public methods
@@ -185,6 +179,12 @@ package com.psixokot.console {
             }
             return null;
         }
+	
+	    public function removeCommand(name:String):void {
+		    if (_controller) {
+			    _controller.remove(name);
+		    }
+	    }
 
         //--------------------------------------------------------------------------
         //
