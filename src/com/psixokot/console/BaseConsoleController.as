@@ -10,8 +10,9 @@ package com.psixokot.console {
     import com.psixokot.console.core.Option;
     import com.psixokot.console.core.Sentence;
     import com.psixokot.console.core.SentenceHintData;
+	import com.psixokot.console.reporter.Reporter;
 
-    import flash.events.Event;
+	import flash.events.Event;
     import flash.events.EventDispatcher;
     import flash.events.KeyboardEvent;
     import flash.globalization.DateTimeFormatter;
@@ -458,13 +459,19 @@ package com.psixokot.console {
          * @private
          */
         private function help(name:String = null):String {
+			var cmd:Command;
             if (name && name != 'help') {
-                var cmd:Command = getCommand(name);
+                cmd = getCommand(name);
                 if (cmd) {
                     return cmd.description;
                 }
             }
-            return _commandsList.sort().join('\n');
+            var reporter:Reporter = new Reporter();
+            reporter.start('Commands', ['name', 'description']);
+            for each (cmd in _commandsList) {
+                reporter.add([cmd.name, cmd.description]);
+            }
+            return reporter.result();
         }
 
         /**
